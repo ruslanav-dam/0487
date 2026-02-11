@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessió 1: Primers Passos amb JUnit 5 | La Salle</title>
+    <style>
+        :root {
+            --lasalle-blue: #003d82;
+            --lasalle-yellow: #ffd60a;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-code: #f5f7fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: var(--lasalle-blue);
+            color: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 4px solid var(--lasalle-yellow);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            height: 60px;
+        }
+
+        .header-text {
+            flex: 1;
+            margin-left: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .session-badge {
+            background: var(--lasalle-yellow);
+            color: var(--lasalle-blue);
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: var(--lasalle-blue);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--lasalle-yellow);
+            font-weight: 600;
+        }
+
+        h3 {
+            color: var(--lasalle-blue);
+            font-size: 1.3rem;
+            margin: 1.5rem 0 1rem;
+            font-weight: 600;
+        }
+
+        h4 {
+            color: var(--lasalle-blue);
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .concept-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--lasalle-blue);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .concept-box.warning {
+            border-left-color: var(--lasalle-yellow);
+            background: #fffbeb;
+        }
+
+        .concept-box h4 {
+            margin-top: 0;
+            color: var(--lasalle-blue);
+        }
+
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--lasalle-blue);
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'Java';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--lasalle-blue);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .code-line {
+            display: block;
+        }
+
+        .code-indent-1 { padding-left: 1.5rem; }
+        .code-indent-2 { padding-left: 3rem; }
+        .code-indent-3 { padding-left: 4.5rem; }
+
+        .keyword { color: #0000ff; font-weight: 600; }
+        .function { color: #795e26; }
+        .string { color: #a31515; }
+        .comment { color: #008000; font-style: italic; }
+        .annotation { color: #646464; }
+
+        .aaa-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .aaa-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--lasalle-blue);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .aaa-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 61, 130, 0.2);
+        }
+
+        .aaa-card .number {
+            width: 50px;
+            height: 50px;
+            background: var(--lasalle-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+
+        .aaa-card h4 {
+            color: var(--lasalle-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .test-types {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .test-type {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .test-type::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--lasalle-blue);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .test-type.black-box::before {
+            background: var(--danger);
+        }
+
+        .test-type h4 {
+            margin-top: 0;
+        }
+
+        .assert-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .assert-list li {
+            background: var(--bg-secondary);
+            padding: 1rem 1.5rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            border-left: 3px solid var(--lasalle-blue);
+            font-family: 'Courier New', monospace;
+            transition: all 0.2s ease;
+        }
+
+        .assert-list li:hover {
+            background: var(--bg-code);
+            border-left-color: var(--lasalle-yellow);
+            transform: translateX(5px);
+        }
+
+        .demo-section {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+            border: 2px solid var(--lasalle-blue);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .demo-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--lasalle-yellow);
+        }
+
+        .demo-label {
+            background: var(--lasalle-yellow);
+            color: var(--lasalle-blue);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--lasalle-blue);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 1rem 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.3rem;
+            top: 1.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--lasalle-yellow);
+            border: 3px solid var(--lasalle-blue);
+        }
+
+        .timeline-item h4 {
+            color: var(--lasalle-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        ul {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        ul li {
+            margin: 0.5rem 0;
+            line-height: 1.8;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 2px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header-text {
+                margin-left: 0;
+                margin-top: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .aaa-grid,
+            .test-types {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="https://tarragona.lasalle.cat/" alt="La Salle Logo" class="logo">
+            <div class="header-text">
+                <h1>Primers Passos amb JUnit 5</h1>
+                <p class="subtitle">RA3 - Disseny i realització de proves | Entorns de Desenvolupament</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="session-badge">Sessió 1 - 2 hores</div>
+
+        <section class="section">
+            <h2>1. Què és JUnit i per què existeix?</h2>
+            
+            <p>Imagina que has programat una funció que calcula l'àrea d'un cercle. Com saps que funciona correctament? Probablement executaries el programa, posaries uns quants valors i miraries si el resultat és correcte.</p>
+            
+            <p>Però què passa quan el teu projecte té 50 funcions? O 500? Fer proves manuals és lent, avorrit i propens a errors.</p>
+
+            <div class="concept-box">
+                <h4>La solució: JUnit</h4>
+                <p><strong>JUnit</strong> és un framework que permet automatitzar les proves del teu codi Java. Escrius una vegada els tests, i pots executar-los tantes vegades com vulguis en segons.</p>
+                <p>JUnit 5 és la versió més moderna i està dissenyat per aprofitar les característiques de Java 8+. És l'eina més popular per proves unitàries en Java.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>2. Què és un Test Unitari?</h2>
+            
+            <div class="concept-box warning">
+                <h4>Definició</h4>
+                <p>Un <strong>test unitari</strong> és una prova que verifica que una unitat de codi (normalment una funció o mètode) funciona correctament de forma aïllada.</p>
+            </div>
+
+            <p><strong>Característiques d'un bon test unitari:</strong></p>
+            <ul>
+                <li><strong>Específic:</strong> Prova una sola cosa</li>
+                <li><strong>Ràpid:</strong> S'executa en mil·lisegons</li>
+                <li><strong>Repetible:</strong> Sempre dona el mateix resultat</li>
+                <li><strong>Aïllat:</strong> No depèn d'altres tests</li>
+                <li><strong>Clar:</strong> Si falla, és obvi què ha anat malament</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>3. Caixa Negra vs Caixa Blanca</h2>
+            
+            <div class="test-types">
+                <div class="test-type black-box">
+                    <h4>Caixa Negra (Black Box)</h4>
+                    <p><strong>No mirem el codi intern</strong></p>
+                    <p>Testem la funció com un usuari: només ens importa que donada una entrada, obtenim la sortida esperada.</p>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">Exemple: "Si dono un 8, la nota ha de ser 'Notable'"</p>
+                </div>
+
+                <div class="test-type">
+                    <h4>Caixa Blanca (White Box)</h4>
+                    <p><strong>Mirem el codi intern</strong></p>
+                    <p>Testem que tots els camins del codi (if, else, bucles...) funcionen correctament. Ens assegurem que cobrim tots els casos.</p>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">Exemple: "Aquest if ha de ser cert almenys una vegada"</p>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h4>En aquesta sessió...</h4>
+                <p>Farem <strong>testing de caixa negra</strong>. Ens donaran funcions ja fetes, i haurem d'escriure tests que verifiquin que funcionen correctament sense mirar com estan implementades per dins.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>4. Anatomia d'un Test: Les 3 A</h2>
+            
+            <p>Tots els tests segueixen un patró molt clar anomenat <strong>AAA (Arrange, Act, Assert)</strong>:</p>
+
+            <div class="aaa-grid">
+                <div class="aaa-card">
+                    <div class="number">1</div>
+                    <h4>Arrange</h4>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem;">Prepara les dades</p>
+                </div>
+
+                <div class="aaa-card">
+                    <div class="number">2</div>
+                    <h4>Act</h4>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem;">Executa la funció</p>
+                </div>
+
+                <div class="aaa-card">
+                    <div class="number">3</div>
+                    <h4>Assert</h4>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem;">Verifica el resultat</p>
+                </div>
+            </div>
+
+            <h3>Exemple visual amb codi:</h3>
+            <div class="code-block">
+<span class="code-line"><span class="annotation">@Test</span></span>
+<span class="code-line"><span class="keyword">public void</span> <span class="function">testSuma</span>() {</span>
+<span class="code-line code-indent-1"><span class="comment">// 1. ARRANGE: Preparem les dades</span></span>
+<span class="code-line code-indent-1"><span class="keyword">int</span> a = <span class="string">5</span>;</span>
+<span class="code-line code-indent-1"><span class="keyword">int</span> b = <span class="string">3</span>;</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="comment">// 2. ACT: Executem la funció</span></span>
+<span class="code-line code-indent-1"><span class="keyword">int</span> resultat = Calculadora.<span class="function">suma</span>(a, b);</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="comment">// 3. ASSERT: Verifiquem que és correcte</span></span>
+<span class="code-line code-indent-1"><span class="function">assertEquals</span>(<span class="string">8</span>, resultat);</span>
+<span class="code-line">}</span>
+            </div>
+
+            <div class="concept-box warning">
+                <h4>Consell important</h4>
+                <p>Si un test és confús, pregunta't: "On està l'Arrange, l'Act i l'Assert?" Aquesta estructura ha d'estar sempre clara.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>5. Els Asserts de JUnit</h2>
+            
+            <p>Els <strong>asserts</strong> són les eines que fem servir per comprovar que el resultat és l'esperat. JUnit 5 en té molts, però començarem amb els 3 més bàsics:</p>
+
+            <ul class="assert-list">
+                <li><strong>assertEquals(esperat, actual)</strong> - Comprova que dos valors són iguals</li>
+                <li><strong>assertTrue(condició)</strong> - Comprova que una condició és certa</li>
+                <li><strong>assertFalse(condició)</strong> - Comprova que una condició és falsa</li>
+            </ul>
+
+            <h3>Exemple d'ús:</h3>
+            <div class="code-block">
+<span class="code-line"><span class="annotation">@Test</span></span>
+<span class="code-line"><span class="keyword">public void</span> <span class="function">testNotes</span>() {</span>
+<span class="code-line code-indent-1"><span class="comment">// assertEquals: valors iguals</span></span>
+<span class="code-line code-indent-1"><span class="function">assertEquals</span>(<span class="string">10</span>, <span class="string">5</span> + <span class="string">5</span>);</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="comment">// assertTrue: condició certa</span></span>
+<span class="code-line code-indent-1"><span class="function">assertTrue</span>(<span class="string">7</span> > <span class="string">5</span>);</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="comment">// assertFalse: condició falsa</span></span>
+<span class="code-line code-indent-1"><span class="function">assertFalse</span>(<span class="string">"Hola"</span>.<span class="function">equals</span>(<span class="string">"Adéu"</span>));</span>
+<span class="code-line">}</span>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>6. AssertThrows: Testejant Errors</h2>
+            
+            <p>A vegades volem comprovar que la nostra funció <strong>llança un error</strong> quan les dades són incorrectes. Per això fem servir <code>assertThrows</code>.</p>
+
+            <div class="concept-box">
+                <h4>Per què testejar errors?</h4>
+                <p>És tan important verificar que el codi funciona bé amb dades correctes com que falla correctament amb dades incorrectes.</p>
+            </div>
+
+            <h3>Exemple:</h3>
+            <div class="code-block">
+<span class="code-line"><span class="annotation">@Test</span></span>
+<span class="code-line"><span class="keyword">public void</span> <span class="function">testDivisioPerZero</span>() {</span>
+<span class="code-line code-indent-1"><span class="comment">// Esperem que llanci una ArithmeticException</span></span>
+<span class="code-line code-indent-1"><span class="function">assertThrows</span>(ArithmeticException.<span class="keyword">class</span>, () -> {</span>
+<span class="code-line code-indent-2"><span class="keyword">int</span> resultat = <span class="string">10</span> / <span class="string">0</span>;</span>
+<span class="code-line code-indent-1">});</span>
+<span class="code-line">}</span>
+            </div>
+
+            <p>Si la funció NO llança l'error esperat, el test fallarà.</p>
+        </section>
+
+        <section class="demo-section">
+            <div class="demo-header">
+                <div class="demo-label">DEMO EN VIU</div>
+                <div>
+                    <h2 style="margin: 0; color: var(--lasalle-blue);">Validador de Notes</h2>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem;">Vegem un exemple complet pas a pas</p>
+                </div>
+            </div>
+
+            <h3>Pas 1: La funció a testejar (ja feta):</h3>
+            <div class="code-block">
+<span class="code-line"><span class="keyword">public class</span> <span class="function">ValidadorNotes</span> {</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="keyword">public static</span> String <span class="function">qualificacio</span>(<span class="keyword">int</span> nota) {</span>
+<span class="code-line code-indent-2"><span class="keyword">if</span> (nota < <span class="string">0</span> || nota > <span class="string">10</span>) {</span>
+<span class="code-line code-indent-3"><span class="keyword">throw new</span> IllegalArgumentException(<span class="string">"Nota invàlida"</span>);</span>
+<span class="code-line code-indent-2">}</span>
+<span class="code-line code-indent-2"><span class="keyword">if</span> (nota < <span class="string">5</span>) <span class="keyword">return</span> <span class="string">"Suspès"</span>;</span>
+<span class="code-line code-indent-2"><span class="keyword">if</span> (nota < <span class="string">7</span>) <span class="keyword">return</span> <span class="string">"Aprovat"</span>;</span>
+<span class="code-line code-indent-2"><span class="keyword">if</span> (nota < <span class="string">9</span>) <span class="keyword">return</span> <span class="string">"Notable"</span>;</span>
+<span class="code-line code-indent-2"><span class="keyword">return</span> <span class="string">"Excel·lent"</span>;</span>
+<span class="code-line code-indent-1">}</span>
+<span class="code-line">}</span>
+            </div>
+
+            <h3>Pas 2: Els tests (seguint AAA):</h3>
+            <div class="code-block">
+<span class="code-line"><span class="keyword">import static</span> org.junit.jupiter.api.Assertions.*;</span>
+<span class="code-line"><span class="keyword">import</span> org.junit.jupiter.api.Test;</span>
+<span class="code-line">    </span>
+<span class="code-line"><span class="keyword">public class</span> <span class="function">ValidadorNotesTest</span> {</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="annotation">@Test</span></span>
+<span class="code-line code-indent-1"><span class="keyword">public void</span> <span class="function">testNotaSuspes</span>() {</span>
+<span class="code-line code-indent-2"><span class="comment">// Arrange</span></span>
+<span class="code-line code-indent-2"><span class="keyword">int</span> nota = <span class="string">3</span>;</span>
+<span class="code-line">        </span>
+<span class="code-line code-indent-2"><span class="comment">// Act</span></span>
+<span class="code-line code-indent-2">String resultat = ValidadorNotes.<span class="function">qualificacio</span>(nota);</span>
+<span class="code-line">        </span>
+<span class="code-line code-indent-2"><span class="comment">// Assert</span></span>
+<span class="code-line code-indent-2"><span class="function">assertEquals</span>(<span class="string">"Suspès"</span>, resultat);</span>
+<span class="code-line code-indent-1">}</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="annotation">@Test</span></span>
+<span class="code-line code-indent-1"><span class="keyword">public void</span> <span class="function">testNotaAprovat</span>() {</span>
+<span class="code-line code-indent-2"><span class="function">assertEquals</span>(<span class="string">"Aprovat"</span>, ValidadorNotes.<span class="function">qualificacio</span>(<span class="string">6</span>));</span>
+<span class="code-line code-indent-1">}</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="annotation">@Test</span></span>
+<span class="code-line code-indent-1"><span class="keyword">public void</span> <span class="function">testNotaNotable</span>() {</span>
+<span class="code-line code-indent-2"><span class="function">assertEquals</span>(<span class="string">"Notable"</span>, ValidadorNotes.<span class="function">qualificacio</span>(<span class="string">8</span>));</span>
+<span class="code-line code-indent-1">}</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="annotation">@Test</span></span>
+<span class="code-line code-indent-1"><span class="keyword">public void</span> <span class="function">testNotaExcellent</span>() {</span>
+<span class="code-line code-indent-2"><span class="function">assertEquals</span>(<span class="string">"Excel·lent"</span>, ValidadorNotes.<span class="function">qualificacio</span>(<span class="string">10</span>));</span>
+<span class="code-line code-indent-1">}</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="annotation">@Test</span></span>
+<span class="code-line code-indent-1"><span class="keyword">public void</span> <span class="function">testNotaInvalida</span>() {</span>
+<span class="code-line code-indent-2"><span class="comment">// Comprovem que llança error amb nota -1</span></span>
+<span class="code-line code-indent-2"><span class="function">assertThrows</span>(IllegalArgumentException.<span class="keyword">class</span>, () -> {</span>
+<span class="code-line code-indent-3">ValidadorNotes.<span class="function">qualificacio</span>(<span class="string">-1</span>);</span>
+<span class="code-line code-indent-2">});</span>
+<span class="code-line">        </span>
+<span class="code-line code-indent-2"><span class="comment">// Comprovem que llança error amb nota 11</span></span>
+<span class="code-line code-indent-2"><span class="function">assertThrows</span>(IllegalArgumentException.<span class="keyword">class</span>, () -> {</span>
+<span class="code-line code-indent-3">ValidadorNotes.<span class="function">qualificacio</span>(<span class="string">11</span>);</span>
+<span class="code-line code-indent-2">});</span>
+<span class="code-line code-indent-1">}</span>
+<span class="code-line">}</span>
+            </div>
+
+            <div class="concept-box" style="margin-top: 2rem;">
+                <h4>Què hem cobert?</h4>
+                <p>Amb aquests 5 tests, hem cobert:</p>
+                <ul>
+                    <li>Totes les qualificacions possibles (Suspès, Aprovat, Notable, Excel·lent)</li>
+                    <li>Els casos de notes invàlides (menors que 0 o majors que 10)</li>
+                </ul>
+            </div>
+        </section>
+
+
+
+        <section class="section">
+            <h2>7. Resum de Conceptes Clau</h2>
+            
+            <div class="concept-box">
+                <h4>Què has après avui</h4>
+                <ul>
+                    <li>Què és JUnit i per què automatitzar tests</li>
+                    <li>Diferència entre caixa negra i caixa blanca</li>
+                    <li>Les 3 A: Arrange, Act, Assert</li>
+                    <li>Els 4 asserts essencials: assertEquals, assertTrue, assertFalse, assertThrows</li>
+                    <li>Com escriure tests reals amb JUnit 5</li>
+                </ul>
+            </div>
+
+            <div class="concept-box warning" style="margin-top: 1.5rem;">
+                <h4>Proper pas</h4>
+                <p>Ara és el teu torn! Obre el document d'exercicis i comença a practicar.</p>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p><strong>Sessió 1: Primers Passos amb JUnit 5</strong></p>
+        <p style="margin-top: 0.5rem;">RA3 · Disseny i realització de proves · 0487 · Entorns de Desenvolupament /p>
+        <p style="margin-top: 0.5rem;">La Salle Tarragona</p>
+    </footer>
+</body>
+</html>
