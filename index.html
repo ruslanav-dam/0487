@@ -362,15 +362,7 @@
         }
 
         @media print {
-            header {
-                break-inside: avoid;
-            }
-            
-            .section {
-                break-inside: avoid;
-            }
-            
-            .code-block {
+            header, .section, .code-block {
                 break-inside: avoid;
             }
         }
@@ -480,6 +472,27 @@
                     </tr>
                 </tbody>
             </table>
+
+            <h3>Com funcionen les excepcions?</h3>
+            <p>Quan llances una excepció amb <code>throw new TipusExcepcio()</code>:</p>
+            <ol class="steps">
+                <li>
+                    <strong>El mètode actual s'atura immediatament</strong>
+                    <p>No continua executant codi després del throw</p>
+                </li>
+                <li>
+                    <strong>L'excepció "puja" per la pila de crides</strong>
+                    <p>Va buscant un try-catch que la capturi</p>
+                </li>
+                <li>
+                    <strong>Si no troba cap try-catch</strong>
+                    <p>El programa sencer es para i mostra l'error</p>
+                </li>
+                <li>
+                    <strong>Si troba un try-catch</strong>
+                    <p>Executa el bloc catch i continua</p>
+                </li>
+            </ol>
         </section>
 
         <section class="section">
@@ -555,12 +568,21 @@
                     </li>
                 </ol>
             </div>
+
+            <h3>Per què importa triar bé?</h3>
+            <p>Triar la excepció correcta ajuda a:</p>
+            <ul>
+                <li><strong>Claredat:</strong> Qui llegeix el codi entén immediatament quin és el problema</li>
+                <li><strong>Debugging:</strong> És més fàcil trobar errors quan les excepcions són específiques</li>
+                <li><strong>Testing:</strong> Els tests poden verificar excepcions concretes amb assertThrows</li>
+                <li><strong>Documentació:</strong> El JavaDoc és més precís quan especifiques quin tipus d'excepció</li>
+            </ul>
         </section>
 
         <section class="section">
             <h2>3. Exemple Complet: Developer vs Tester</h2>
             
-            <p>Vegem el mateix codi des de les dues perspectives.</p>
+            <p>Vegem el mateix codi des de les dues perspectives amb TOTS els detalls.</p>
 
             <h3>Objectiu: Validador d'Edat</h3>
             <p>Volem una classe que emmagatzemi l'edat d'una persona, però només si és vàlida (0-150 anys).</p>
@@ -629,6 +651,16 @@
 <span class="code-line code-indent-2"><span class="keyword">return this</span>.edat;</span>
 <span class="code-line code-indent-1">}</span>
 <span class="code-line">}</span>
+            </div>
+
+            <div class="concept-box warning">
+                <h4>Per què "this.edat = edat"?</h4>
+                <p><strong>this</strong> és una referència a l'objecte actual. És necessària per diferenciar:</p>
+                <ul>
+                    <li><strong>this.edat</strong> = la variable de l'objecte (atribut de classe)</li>
+                    <li><strong>edat</strong> (sense this) = el paràmetre del mètode</li>
+                </ul>
+                <p>Sense "this", Java no sap a quina variable et refereixes i el codi no funcionaria!</p>
             </div>
 
             <h3>ROL TESTER: Escrivim els Tests</h3>
@@ -739,14 +771,16 @@
         <section class="section">
             <h2>4. Assertions Avançades per Testers</h2>
             
-            <p>Ara que entens el rol de tester, vegem les eines que tens disponibles.</p>
+            <p>Ara que entens el rol de tester, vegem TOTES les eines que tens disponibles.</p>
 
             <div class="comparison-grid">
                 <div class="comparison-card">
                     <h4>assertAll()</h4>
-                    <p><strong>Què fa:</strong> Agrupa múltiples verificacions</p>
-                    <p><strong>Per què l'uso:</strong> Vull veure TOTS els errors, no només el primer</p>
+                    <p><strong>Què fa:</strong> Agrupa múltiples verificacions i les executa TOTES</p>
+                    <p><strong>Per què l'uso:</strong> Vull veure TOTS els errors d'un cop, no només el primer</p>
+                    <p><strong>Quan l'uso:</strong> Quan vull verificar diverses coses relacionades</p>
                     <div class="code-block" style="margin-top: 1rem;">
+<span class="code-line"><span class="comment">// Exemple: Verificar múltiples propietats</span></span>
 <span class="code-line"><span class="function">assertAll</span>(</span>
 <span class="code-line code-indent-1">() -> <span class="function">assertEquals</span>(<span class="string">5</span>, suma),</span>
 <span class="code-line code-indent-1">() -> <span class="function">assertTrue</span>(suma > <span class="string">0</span>),</span>
@@ -757,32 +791,44 @@
 
                 <div class="comparison-card">
                     <h4>assertThrows()</h4>
-                    <p><strong>Què fa:</strong> Verifica que es llança una excepció</p>
-                    <p><strong>Per què l'uso:</strong> Vull comprovar gestió d'errors</p>
+                    <p><strong>Què fa:</strong> Verifica que el codi llança una excepció específica</p>
+                    <p><strong>Per què l'uso:</strong> Per comprovar que el codi detecta errors correctament</p>
+                    <p><strong>Quan l'uso:</strong> Per testejar tots els casos d'error</p>
                     <div class="code-block" style="margin-top: 1rem;">
-<span class="code-line"><span class="function">assertThrows</span>(</span>
+<span class="code-line"><span class="comment">// Captura l'excepció per verificar-la</span></span>
+<span class="code-line">Exception exc = <span class="function">assertThrows</span>(</span>
 <span class="code-line code-indent-1">IllegalArgumentException.<span class="keyword">class</span>,</span>
 <span class="code-line code-indent-1">() -> validador.<span class="function">validar</span>(<span class="keyword">null</span>)</span>
 <span class="code-line">);</span>
+<span class="code-line"><span class="comment">// Verificar el missatge</span></span>
+<span class="code-line"><span class="function">assertTrue</span>(exc.<span class="function">getMessage</span>().<span class="function">contains</span>(<span class="string">"null"</span>));</span>
                     </div>
                 </div>
 
                 <div class="comparison-card">
                     <h4>Missatges personalitzats</h4>
-                    <p><strong>Què fa:</strong> Afegeix explicació quan falla</p>
-                    <p><strong>Per què l'uso:</strong> Per entendre ràpidament què ha fallat</p>
+                    <p><strong>Què fa:</strong> Afegeix una explicació clara quan el test falla</p>
+                    <p><strong>Per què l'uso:</strong> Per entendre ràpidament què ha fallat sense haver de llegir tot el codi</p>
+                    <p><strong>Quan l'uso:</strong> SEMPRE! Facilita molt el debugging</p>
                     <div class="code-block" style="margin-top: 1rem;">
+<span class="code-line"><span class="comment">// Sense missatge (poc informatiu)</span></span>
+<span class="code-line"><span class="function">assertEquals</span>(<span class="string">10</span>, total);</span>
+<span class="code-line">    </span>
+<span class="code-line"><span class="comment">// Amb missatge (molt millor!)</span></span>
 <span class="code-line"><span class="function">assertEquals</span>(<span class="string">10</span>, total,</span>
-<span class="code-line code-indent-1"><span class="string">"La suma hauria de ser 10"</span></span>
+<span class="code-line code-indent-1"><span class="string">"La suma de 3+7 hauria de ser 10"</span></span>
 <span class="code-line">);</span>
                     </div>
                 </div>
 
                 <div class="comparison-card">
                     <h4>assertTimeout()</h4>
-                    <p><strong>Què fa:</strong> Verifica temps d'execució</p>
-                    <p><strong>Per què l'uso:</strong> Per tests de rendiment</p>
+                    <p><strong>Què fa:</strong> Verifica que el codi s'executa en un temps determinat</p>
+                    <p><strong>Per què l'uso:</strong> Per assegurar que no hi ha problemes de rendiment</p>
+                    <p><strong>Quan l'uso:</strong> Quan el rendiment és crític</p>
                     <div class="code-block" style="margin-top: 1rem;">
+<span class="code-line"><span class="keyword">import</span> java.time.Duration;</span>
+<span class="code-line">    </span>
 <span class="code-line"><span class="function">assertTimeout</span>(</span>
 <span class="code-line code-indent-1">Duration.<span class="function">ofSeconds</span>(<span class="string">2</span>),</span>
 <span class="code-line code-indent-1">() -> processarDades()</span>
@@ -790,36 +836,105 @@
                     </div>
                 </div>
             </div>
+
+            <div class="concept-box warning">
+                <h4>Diferència CLAU: Developer vs Tester</h4>
+                <table style="margin-top: 1rem;">
+                    <thead>
+                        <tr>
+                            <th>Situació</th>
+                            <th>Developer usa</th>
+                            <th>Tester usa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Llançar una excepció</td>
+                            <td><code>throw new IllegalArgumentException()</code></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Verificar que es llança</td>
+                            <td>-</td>
+                            <td><code>assertThrows(IllegalArgumentException.class, ...)</code></td>
+                        </tr>
+                        <tr>
+                            <td>Gestionar un error</td>
+                            <td><code>try { ... } catch { ... }</code></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Verificar un valor</td>
+                            <td>-</td>
+                            <td><code>assertEquals(...)</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <section class="section">
             <h2>5. Documentació amb JavaDoc</h2>
             
-            <p>Tant developers com testers han de documentar el seu codi.</p>
+            <p>Tant developers com testers han de documentar el seu codi. JavaDoc és l'estàndard de Java.</p>
 
-            <h3>Sintaxi de JavaDoc</h3>
+            <h3>Sintaxi completa de JavaDoc</h3>
             <div class="code-block">
 <span class="code-line"><span class="javadoc">/**</span></span>
-<span class="code-line"><span class="javadoc"> * Descripció breu del que fa</span></span>
+<span class="code-line"><span class="javadoc"> * Descripció breu del que fa el mètode (una frase)</span></span>
 <span class="code-line"><span class="javadoc"> * </span></span>
-<span class="code-line"><span class="javadoc"> * Pots afegir més detalls aquí</span></span>
+<span class="code-line"><span class="javadoc"> * Aquí pots afegir més detalls si cal:</span></span>
+<span class="code-line"><span class="javadoc"> * - Comportament especial</span></span>
+<span class="code-line"><span class="javadoc"> * - Casos límit</span></span>
+<span class="code-line"><span class="javadoc"> * - Exemples d'ús</span></span>
 <span class="code-line"><span class="javadoc"> *</span></span>
 <span class="code-line"><span class="javadoc"> * @param nomParametre Descripció del paràmetre</span></span>
-<span class="code-line"><span class="javadoc"> * @return Què retorna</span></span>
-<span class="code-line"><span class="javadoc"> * @throws TipusExcepcio Quan es llança</span></span>
+<span class="code-line"><span class="javadoc"> * @return Descripció del valor que retorna</span></span>
+<span class="code-line"><span class="javadoc"> * @throws TipusExcepcio Descripció de QUAN es llança</span></span>
 <span class="code-line"><span class="javadoc"> */</span></span>
             </div>
+
+            <h3>Tags de JavaDoc més importants</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tag</th>
+                        <th>Quan usar-lo</th>
+                        <th>Exemple</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>@param</strong></td>
+                        <td>Per cada paràmetre del mètode</td>
+                        <td>@param edat L'edat de la persona (0-150)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>@return</strong></td>
+                        <td>Si el mètode retorna algo</td>
+                        <td>@return true si l'edat és vàlida, false en cas contrari</td>
+                    </tr>
+                    <tr>
+                        <td><strong>@throws</strong></td>
+                        <td>Per cada tipus d'excepció que pot llançar</td>
+                        <td>@throws IllegalArgumentException si edat < 0</td>
+                    </tr>
+                </tbody>
+            </table>
 
             <div class="two-column">
                 <div class="perspective-card developer">
                     <div class="role-badge developer">Developer</div>
-                    <h4>Documento el codi</h4>
+                    <h4>Documento el codi de producció</h4>
                     <div class="code-block">
 <span class="code-line"><span class="javadoc">/**</span></span>
-<span class="code-line"><span class="javadoc"> * Valida format d'email</span></span>
+<span class="code-line"><span class="javadoc"> * Valida el format d'un email</span></span>
 <span class="code-line"><span class="javadoc"> * </span></span>
+<span class="code-line"><span class="javadoc"> * Comprova que l'email conté @</span></span>
+<span class="code-line"><span class="javadoc"> * i un punt després de l'@</span></span>
+<span class="code-line"><span class="javadoc"> *</span></span>
 <span class="code-line"><span class="javadoc"> * @param email Email a validar</span></span>
-<span class="code-line"><span class="javadoc"> * @return true si vàlid</span></span>
+<span class="code-line"><span class="javadoc"> * @return true si format vàlid</span></span>
 <span class="code-line"><span class="javadoc"> * @throws IllegalArgumentException</span></span>
 <span class="code-line"><span class="javadoc"> *         si email és null</span></span>
 <span class="code-line"><span class="javadoc"> */</span></span>
@@ -832,13 +947,30 @@
                     <h4>Documento els tests</h4>
                     <div class="code-block">
 <span class="code-line"><span class="javadoc">/**</span></span>
-<span class="code-line"><span class="javadoc"> * Verifica que email null</span></span>
-<span class="code-line"><span class="javadoc"> * llança IllegalArgumentException</span></span>
+<span class="code-line"><span class="javadoc"> * Verifica que validar() llança</span></span>
+<span class="code-line"><span class="javadoc"> * IllegalArgumentException quan</span></span>
+<span class="code-line"><span class="javadoc"> * l'email és null</span></span>
 <span class="code-line"><span class="javadoc"> */</span></span>
 <span class="code-line"><span class="annotation">@Test</span></span>
-<span class="code-line"><span class="keyword">public void</span> <span class="function">testEmailNull</span>()</span>
+<span class="code-line"><span class="keyword">public void</span> <span class="function">testEmailNull</span>() {</span>
+<span class="code-line code-indent-1"><span class="function">assertThrows</span>(</span>
+<span class="code-line code-indent-2">IllegalArgumentException.<span class="keyword">class</span>,</span>
+<span class="code-line code-indent-2">() -> validador.<span class="function">validar</span>(<span class="keyword">null</span>)</span>
+<span class="code-line code-indent-1">);</span>
+<span class="code-line">}</span>
                     </div>
                 </div>
+            </div>
+
+            <div class="concept-box success">
+                <h4>Com generar documentació HTML des de JavaDoc</h4>
+                <p>Els IDEs poden generar documentació automàticament:</p>
+                <ul>
+                    <li><strong>IntelliJ IDEA:</strong> Tools → Generate JavaDoc</li>
+                    <li><strong>Eclipse:</strong> Project → Generate Javadoc</li>
+                    <li><strong>Terminal:</strong> <code>javadoc *.java</code></li>
+                </ul>
+                <p>Això crea fitxers HTML que pots obrir al navegador!</p>
             </div>
         </section>
 
@@ -856,28 +988,33 @@
                 <tbody>
                     <tr>
                         <td><strong>Excepcions</strong></td>
-                        <td>Llanço amb "throw new"</td>
-                        <td>Verifico amb "assertThrows"</td>
+                        <td>Llanço amb "throw new TipusExcepcio()"</td>
+                        <td>Verifico amb "assertThrows(TipusExcepcio.class, ...)"</td>
                     </tr>
                     <tr>
                         <td><strong>IllegalArgumentException</strong></td>
-                        <td>Uso quan paràmetre invàlid</td>
-                        <td>Espero quan paràmetre invàlid</td>
+                        <td>Uso quan un paràmetre té valor invàlid</td>
+                        <td>Espero quan testem validacions de paràmetres</td>
                     </tr>
                     <tr>
                         <td><strong>this</strong></td>
-                        <td>Diferencio variable vs paràmetre</td>
-                        <td>-</td>
+                        <td>Diferencio variable de classe vs paràmetre</td>
+                        <td>No aplicable</td>
                     </tr>
                     <tr>
                         <td><strong>assertAll</strong></td>
-                        <td>-</td>
-                        <td>Agrupo múltiples verificacions</td>
+                        <td>No aplicable</td>
+                        <td>Agrupo múltiples verificacions relacionades</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Missatges personalitzats</strong></td>
+                        <td>Els poso a les excepcions</td>
+                        <td>Els poso als asserts per facilitar debugging</td>
                     </tr>
                     <tr>
                         <td><strong>JavaDoc</strong></td>
-                        <td>Documento codi i excepcions</td>
-                        <td>Documento què testo</td>
+                        <td>Documento codi: què fa, paràmetres, retorn, excepcions</td>
+                        <td>Documento tests: què verifiquen</td>
                     </tr>
                 </tbody>
             </table>
@@ -886,9 +1023,10 @@
                 <h4>Proper pas</h4>
                 <p>Ara practica amb els exercicis del document Word. Hauràs de ser TOTS DOS rols:</p>
                 <ol>
-                    <li>Developer: Escriure validadors amb excepcions i JavaDoc</li>
-                    <li>Tester: Escriure tests complets per verificar-los</li>
+                    <li><strong>Developer:</strong> Escriure validadors amb excepcions i JavaDoc complet</li>
+                    <li><strong>Tester:</strong> Escriure tests exhaustius que verifiquin tot</li>
                 </ol>
+                <p style="margin-top: 1rem;"><strong>Recorda consultar aquesta teoria!</strong> Els exercicis tenen referències específiques a cada secció.</p>
             </div>
         </section>
     </div>
