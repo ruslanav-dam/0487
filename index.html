@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessió 2: Assertions i Gestió d'Excepcions | La Salle</title>
+    <style>
+        :root {
+            --lasalle-blue: #003d82;
+            --lasalle-yellow: #ffd60a;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-code: #f5f7fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --developer: #17a2b8;
+            --tester: #6f42c1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: var(--lasalle-blue);
+            color: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 4px solid var(--lasalle-yellow);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            height: 60px;
+            width: auto;
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .session-badge {
+            background: var(--lasalle-yellow);
+            color: var(--lasalle-blue);
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: clamp(1rem, 3vw, 2rem);
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: var(--lasalle-blue);
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--lasalle-yellow);
+            font-weight: 600;
+        }
+
+        h3 {
+            color: var(--lasalle-blue);
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            margin: 1.5rem 0 1rem;
+            font-weight: 600;
+        }
+
+        h4 {
+            color: var(--lasalle-blue);
+            font-size: clamp(1rem, 2vw, 1.1rem);
+            margin: 1rem 0 0.5rem;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .concept-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--lasalle-blue);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .concept-box.warning {
+            border-left-color: var(--warning);
+            background: #fffbeb;
+        }
+
+        .concept-box.danger {
+            border-left-color: var(--danger);
+            background: #fff5f5;
+        }
+
+        .concept-box.success {
+            border-left-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        .concept-box.developer {
+            border-left-color: var(--developer);
+            background: #e0f7fa;
+        }
+
+        .concept-box.tester {
+            border-left-color: var(--tester);
+            background: #f3e5f5;
+        }
+
+        .concept-box h4 {
+            margin-top: 0;
+            color: var(--lasalle-blue);
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .role-badge.developer {
+            background: var(--developer);
+            color: white;
+        }
+
+        .role-badge.tester {
+            background: var(--tester);
+            color: white;
+        }
+
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--lasalle-blue);
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'Java';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--lasalle-blue);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .code-line {
+            display: block;
+        }
+
+        .code-indent-1 { padding-left: 1.5rem; }
+        .code-indent-2 { padding-left: 3rem; }
+        .code-indent-3 { padding-left: 4.5rem; }
+
+        .keyword { color: #0000ff; font-weight: 600; }
+        .function { color: #795e26; }
+        .string { color: #a31515; }
+        .comment { color: #008000; font-style: italic; }
+        .annotation { color: #646464; }
+        .javadoc { color: #3f5fbf; font-style: italic; }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .comparison-card h4 {
+            margin-top: 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--lasalle-blue);
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .perspective-card {
+            background: var(--bg-secondary);
+            border: 3px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .perspective-card.developer {
+            border-color: var(--developer);
+        }
+
+        .perspective-card.tester {
+            border-color: var(--tester);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
+        }
+
+        table th {
+            background: var(--lasalle-blue);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        table tr:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        ul li, ol li {
+            margin: 0.5rem 0;
+            line-height: 1.8;
+        }
+
+        .steps {
+            counter-reset: step;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .steps li {
+            counter-increment: step;
+            position: relative;
+            padding-left: 3.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--lasalle-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 2px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+
+            .code-block {
+                font-size: 0.75rem;
+                padding: 1rem;
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            header {
+                break-inside: avoid;
+            }
+            
+            .section {
+                break-inside: avoid;
+            }
+            
+            .code-block {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="data:image/jpeg;base64,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" alt="La Salle Tarragona" class="logo">
+            <div class="header-text">
+                <h1>Assertions i Gestió d'Excepcions</h1>
+                <p class="subtitle">Perspectiva Developer vs Tester | Entorns de Desenvolupament</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="session-badge">Sessió 2 - 2 hores</div>
+
+        <section class="section">
+            <h2>0. Introducció: Dos Rols, Un Objectiu</h2>
+            
+            <p>En aquesta sessió aprendràs a veure el codi des de dues perspectives diferents però complementàries:</p>
+
+            <div class="two-column">
+                <div class="perspective-card developer">
+                    <div class="role-badge developer">👨‍💻 DEVELOPER</div>
+                    <h4>Perspectiva del Desenvolupador</h4>
+                    <p><strong>Què faig?</strong> Escric el codi que fa coses (funcions, classes, mètodes)</p>
+                    <p><strong>Com penso?</strong> "Com puc fer que això funcioni correctament i gestioni errors?"</p>
+                    <p><strong>Què creo?</strong></p>
+                    <ul>
+                        <li>Classes i mètodes</li>
+                        <li>Gestió d'excepcions (throw)</li>
+                        <li>Validacions de dades</li>
+                        <li>Documentació (JavaDoc)</li>
+                    </ul>
+                </div>
+
+                <div class="perspective-card tester">
+                    <div class="role-badge tester">🧪 TESTER</div>
+                    <h4>Perspectiva del Tester</h4>
+                    <p><strong>Què faig?</strong> Escric tests que verifiquen que el codi funciona</p>
+                    <p><strong>Com penso?</strong> "Com puc trencar això? Què pot anar malament?"</p>
+                    <p><strong>Què creo?</strong></p>
+                    <ul>
+                        <li>Classes de test (*Test.java)</li>
+                        <li>Verificacions (assertEquals, assertThrows...)</li>
+                        <li>Casos de prova</li>
+                        <li>Tests d'excepcions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="concept-box warning">
+                <h4>Important</h4>
+                <p>En un projecte real, sovint la mateixa persona fa TOTS DOS rols:</p>
+                <ol>
+                    <li>Escrius el codi (rol developer)</li>
+                    <li>Escrius els tests (rol tester)</li>
+                    <li>Els tests fallen → tornes a ser developer i arregles el codi</li>
+                    <li>Repeteixes fins que tot funciona</li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>1. Excepcions: La Base que Has d'Entendre</h2>
+            
+            <h3>Què és una excepció?</h3>
+            <p>Una <strong>excepció</strong> és com un semàfor vermell al codi: s'atura tot quan detecta un problema.</p>
+
+            <div class="concept-box">
+                <h4>Analogia del món real</h4>
+                <p>Imagina que estàs conduint:</p>
+                <ul>
+                    <li><strong>Tot correcte:</strong> Continua conduint (el codi s'executa normalment)</li>
+                    <li><strong>Problema detectat:</strong> Semàfor vermell! (excepció llançada)</li>
+                    <li><strong>Gestió:</strong> T'aturs i decideixes què fer (try-catch o deixar que el programa s'aturi)</li>
+                </ul>
+            </div>
+
+            <h3>Tipus d'excepcions en Java</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Tipus</th>
+                        <th style="width: 40%;">Quan s'usa</th>
+                        <th style="width: 35%;">Has de gestionar-la?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>RuntimeException</strong><br/>(i les seves filles)</td>
+                        <td>Errors de programació que podries haver evitat: null, divisió per 0, índex incorrecte...</td>
+                        <td>❌ No és obligatori<br/>(però recomanable)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Exception</strong><br/>(checked exceptions)</td>
+                        <td>Problemes previsibles però inevitables: fitxer no existeix, xarxa caiguda...</td>
+                        <td>✅ SÍ, obligatori<br/>(has de posar try-catch o throws)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Error</strong></td>
+                        <td>Problemes greus del sistema: memòria exhaurida, stack overflow...</td>
+                        <td>❌ No té sentit<br/>(el programa morirà)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>2. Triar la Excepció Correcta: La Guia Definitiva</h2>
+            
+            <p>Aquesta és la pregunta que tots els developers novells es fan: <strong>"Quina excepció he de llançar?"</strong></p>
+
+            <h3>Les RuntimeExceptions més comunes</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">Excepció</th>
+                        <th style="width: 35%;">Quan usar-la</th>
+                        <th style="width: 35%;">Exemple</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>IllegalArgumentException</strong></td>
+                        <td>El valor del paràmetre és invàlid (fora de rang, format incorrecte...)</td>
+                        <td>edat = -5, email sense @</td>
+                    </tr>
+                    <tr>
+                        <td><strong>NullPointerException</strong></td>
+                        <td>Tries usar algo que és null</td>
+                        <td>String s = null; s.length()</td>
+                    </tr>
+                    <tr>
+                        <td><strong>IllegalStateException</strong></td>
+                        <td>L'objecte està en un estat incorrecte per fer aquesta operació</td>
+                        <td>Tries llegir d'un fitxer tancat</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ArithmeticException</strong></td>
+                        <td>Error en una operació matemàtica</td>
+                        <td>Divisió per zero</td>
+                    </tr>
+                    <tr>
+                        <td><strong>IndexOutOfBoundsException</strong></td>
+                        <td>Índex fora dels límits</td>
+                        <td>array[10] quan array té 5 elements</td>
+                    </tr>
+                    <tr>
+                        <td><strong>UnsupportedOperationException</strong></td>
+                        <td>Operació no suportada</td>
+                        <td>Tries modificar una llista immutable</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="concept-box success">
+                <h4>Regla d'or per triar</h4>
+                <ol class="steps">
+                    <li>
+                        <strong>És un paràmetre invàlid?</strong>
+                        <p>→ IllegalArgumentException</p>
+                    </li>
+                    <li>
+                        <strong>És null i no hauria de ser-ho?</strong>
+                        <p>→ NullPointerException (o IllegalArgumentException si és un paràmetre)</p>
+                    </li>
+                    <li>
+                        <strong>És un problema matemàtic?</strong>
+                        <p>→ ArithmeticException</p>
+                    </li>
+                    <li>
+                        <strong>És un problema d'estat de l'objecte?</strong>
+                        <p>→ IllegalStateException</p>
+                    </li>
+                    <li>
+                        <strong>Res d'això?</strong>
+                        <p>→ RuntimeException (genèrica) o crea una excepció personalitzada</p>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>3. Exemple Complet: Developer vs Tester</h2>
+            
+            <p>Vegem el mateix codi des de les dues perspectives.</p>
+
+            <h3>🎯 Objectiu: Validador d'Edat</h3>
+            <p>Volem una classe que emmagatzemi l'edat d'una persona, però només si és vàlida (0-150 anys).</p>
+
+            <h3>👨‍💻 ROL DEVELOPER: Escrivim el Codi</h3>
+            
+            <div class="concept-box developer">
+                <div class="role-badge developer">Perspectiva Developer</div>
+                <p><strong>Pregunta que em faig:</strong> "Com faig que això funcioni i gestioni errors?"</p>
+                <p><strong>Decisions que prenc:</strong></p>
+                <ol>
+                    <li>Creo una variable privada "edat"</li>
+                    <li>Creo un setter que valida abans d'assignar</li>
+                    <li>Si l'edat és invàlida, llanço IllegalArgumentException (és un paràmetre invàlid!)</li>
+                    <li>Documento tot amb JavaDoc</li>
+                </ol>
+            </div>
+
+            <div class="code-block">
+<span class="code-line"><span class="javadoc">/**</span></span>
+<span class="code-line"><span class="javadoc"> * Classe que representa una persona amb validació d'edat</span></span>
+<span class="code-line"><span class="javadoc"> */</span></span>
+<span class="code-line"><span class="keyword">public class</span> <span class="function">Persona</span> {</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="comment">// VARIABLE DE CLASSE: cada persona té la seva edat</span></span>
+<span class="code-line code-indent-1"><span class="keyword">private int</span> edat;</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="javadoc">/**</span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> * Estableix l'edat de la persona</span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> * </span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> * @param edat L'edat a assignar (ha de ser entre 0 i 150)</span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> * @throws IllegalArgumentException si edat < 0 o edat > 150</span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> */</span></span>
+<span class="code-line code-indent-1"><span class="keyword">public void</span> <span class="function">setEdat</span>(<span class="keyword">int</span> edat) {</span>
+<span class="code-line">        </span>
+<span class="code-line code-indent-2"><span class="comment">// VALIDACIÓ 1: Detectar edats negatives</span></span>
+<span class="code-line code-indent-2"><span class="comment">// Per què IllegalArgumentException? Perquè "edat" és un PARÀMETRE invàlid</span></span>
+<span class="code-line code-indent-2"><span class="keyword">if</span> (edat < <span class="string">0</span>) {</span>
+<span class="code-line code-indent-3"><span class="comment">// "throw new" = crea i llança una excepció</span></span>
+<span class="code-line code-indent-3"><span class="comment">// Això ATURA el mètode i envia un error</span></span>
+<span class="code-line code-indent-3"><span class="keyword">throw new</span> IllegalArgumentException(</span>
+<span class="code-line code-indent-3 code-indent-1"><span class="string">"L'edat no pot ser negativa: "</span> + edat</span>
+<span class="code-line code-indent-3">);</span>
+<span class="code-line code-indent-2">}</span>
+<span class="code-line">        </span>
+<span class="code-line code-indent-2"><span class="comment">// VALIDACIÓ 2: Detectar edats no realistes</span></span>
+<span class="code-line code-indent-2"><span class="keyword">if</span> (edat > <span class="string">150</span>) {</span>
+<span class="code-line code-indent-3"><span class="keyword">throw new</span> IllegalArgumentException(</span>
+<span class="code-line code-indent-3 code-indent-1"><span class="string">"L'edat no és realista: "</span> + edat</span>
+<span class="code-line code-indent-3">);</span>
+<span class="code-line code-indent-2">}</span>
+<span class="code-line">        </span>
+<span class="code-line code-indent-2"><span class="comment">// Si arriba aquí, l'edat és vàlida!</span></span>
+<span class="code-line code-indent-2"><span class="comment">// ASSIGNACIÓ: guarda el valor</span></span>
+<span class="code-line code-indent-2"><span class="comment">// "this.edat" = la variable d'AQUEST objecte Persona</span></span>
+<span class="code-line code-indent-2"><span class="comment">// "edat" (sense this) = el paràmetre que ens han passat</span></span>
+<span class="code-line code-indent-2"><span class="keyword">this</span>.edat = edat;</span>
+<span class="code-line code-indent-1">}</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="javadoc">/**</span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> * Obté l'edat actual de la persona</span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> * </span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> * @return L'edat de la persona</span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> */</span></span>
+<span class="code-line code-indent-1"><span class="keyword">public int</span> <span class="function">getEdat</span>() {</span>
+<span class="code-line code-indent-2"><span class="keyword">return this</span>.edat;</span>
+<span class="code-line code-indent-1">}</span>
+<span class="code-line">}</span>
+            </div>
+
+            <h3>🧪 ROL TESTER: Escrivim els Tests</h3>
+            
+            <div class="concept-box tester">
+                <div class="role-badge tester">Perspectiva Tester</div>
+                <p><strong>Pregunta que em faig:</strong> "Com puc verificar que això funciona? Què pot trencar-se?"</p>
+                <p><strong>Casos de prova que dissenyò:</strong></p>
+                <ol>
+                    <li>✅ Edat vàlida (exemple: 25) → hauria de funcionar</li>
+                    <li>❌ Edat negativa (exemple: -5) → hauria de llançar excepció</li>
+                    <li>❌ Edat massa gran (exemple: 200) → hauria de llançar excepció</li>
+                    <li>✅ Casos límit: 0 i 150 → haurien de funcionar</li>
+                </ol>
+            </div>
+
+            <div class="code-block">
+<span class="code-line"><span class="keyword">import static</span> org.junit.jupiter.api.Assertions.*;</span>
+<span class="code-line"><span class="keyword">import</span> org.junit.jupiter.api.Test;</span>
+<span class="code-line">    </span>
+<span class="code-line"><span class="javadoc">/**</span></span>
+<span class="code-line"><span class="javadoc"> * Tests per verificar el comportament de la classe Persona</span></span>
+<span class="code-line"><span class="javadoc"> */</span></span>
+<span class="code-line"><span class="keyword">public class</span> <span class="function">PersonaTest</span> {</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="comment">// TEST 1: Verificar que una edat vàlida s'assigna correctament</span></span>
+<span class="code-line code-indent-1"><span class="javadoc">/**</span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> * Test que verifica l'assignació d'una edat vàlida</span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> */</span></span>
+<span class="code-line code-indent-1"><span class="annotation">@Test</span></span>
+<span class="code-line code-indent-1"><span class="keyword">public void</span> <span class="function">testEdatValida</span>() {</span>
+<span class="code-line code-indent-2"><span class="comment">// Arrange: Crear una persona</span></span>
+<span class="code-line code-indent-2">Persona persona = <span class="keyword">new</span> Persona();</span>
+<span class="code-line">        </span>
+<span class="code-line code-indent-2"><span class="comment">// Act: Assignar una edat vàlida (25 està entre 0 i 150)</span></span>
+<span class="code-line code-indent-2">persona.<span class="function">setEdat</span>(<span class="string">25</span>);</span>
+<span class="code-line">        </span>
+<span class="code-line code-indent-2"><span class="comment">// Assert: Verificar que s'ha guardat correctament</span></span>
+<span class="code-line code-indent-2"><span class="function">assertEquals</span>(<span class="string">25</span>, persona.<span class="function">getEdat</span>(), <span class="string">"L'edat hauria de ser 25"</span>);</span>
+<span class="code-line code-indent-1">}</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="comment">// TEST 2: Verificar que edat negativa llança excepció</span></span>
+<span class="code-line code-indent-1"><span class="javadoc">/**</span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> * Test que verifica que es llança excepció amb edat negativa</span></span>
+<span class="code-line code-indent-1"><span class="javadoc"> */</span></span>
+<span class="code-line code-indent-1"><span class="annotation">@Test</span></span>
+<span class="code-line code-indent-1"><span class="keyword">public void</span> <span class="function">testEdatNegativa</span>() {</span>
+<span class="code-line code-indent-2"><span class="comment">// Arrange</span></span>
+<span class="code-line code-indent-2">Persona persona = <span class="keyword">new</span> Persona();</span>
+<span class="code-line">        </span>
+<span class="code-line code-indent-2"><span class="comment">// Act + Assert: Verificar que llança la excepció correcta</span></span>
+<span class="code-line code-indent-2"><span class="comment">// assertThrows espera:</span></span>
+<span class="code-line code-indent-2"><span class="comment">// 1r paràmetre: tipus d'excepció que esperem</span></span>
+<span class="code-line code-indent-2"><span class="comment">// 2n paràmetre: codi que hauria de llançar-la (lambda)</span></span>
+<span class="code-line code-indent-2">Exception exception = <span class="function">assertThrows</span>(</span>
+<span class="code-line code-indent-3">IllegalArgumentException.<span class="keyword">class</span>,</span>
+<span class="code-line code-indent-3">() -> persona.<span class="function">setEdat</span>(<span class="string">-5</span>)</span>
+<span class="code-line code-indent-2">);</span>
+<span class="code-line">        </span>
+<span class="code-line code-indent-2"><span class="comment">// Extra: Verificar que el missatge d'error és correcte</span></span>
+<span class="code-line code-indent-2"><span class="function">assertTrue</span>(</span>
+<span class="code-line code-indent-3">exception.<span class="function">getMessage</span>().<span class="function">contains</span>(<span class="string">"negativa"</span>),</span>
+<span class="code-line code-indent-3"><span class="string">"El missatge hauria de mencionar 'negativa'"</span></span>
+<span class="code-line code-indent-2">);</span>
+<span class="code-line code-indent-1">}</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="comment">// TEST 3: Verificar que edat massa gran llança excepció</span></span>
+<span class="code-line code-indent-1"><span class="annotation">@Test</span></span>
+<span class="code-line code-indent-1"><span class="keyword">public void</span> <span class="function">testEdatMassaGran</span>() {</span>
+<span class="code-line code-indent-2">Persona persona = <span class="keyword">new</span> Persona();</span>
+<span class="code-line">        </span>
+<span class="code-line code-indent-2"><span class="function">assertThrows</span>(</span>
+<span class="code-line code-indent-3">IllegalArgumentException.<span class="keyword">class</span>,</span>
+<span class="code-line code-indent-3">() -> persona.<span class="function">setEdat</span>(<span class="string">200</span>),</span>
+<span class="code-line code-indent-3"><span class="string">"Edat 200 hauria de llançar excepció"</span></span>
+<span class="code-line code-indent-2">);</span>
+<span class="code-line code-indent-1">}</span>
+<span class="code-line">    </span>
+<span class="code-line code-indent-1"><span class="comment">// TEST 4: Verificar casos límit (boundary values)</span></span>
+<span class="code-line code-indent-1"><span class="annotation">@Test</span></span>
+<span class="code-line code-indent-1"><span class="keyword">public void</span> <span class="function">testCasosLimit</span>() {</span>
+<span class="code-line code-indent-2">Persona persona = <span class="keyword">new</span> Persona();</span>
+<span class="code-line">        </span>
+<span class="code-line code-indent-2"><span class="comment">// assertAll executa TOTS els asserts, encara que algun falli</span></span>
+<span class="code-line code-indent-2"><span class="comment">// Així veiem tots els problemes d'un cop</span></span>
+<span class="code-line code-indent-2"><span class="function">assertAll</span>(</span>
+<span class="code-line code-indent-3">() -> {</span>
+<span class="code-line code-indent-3 code-indent-1">persona.<span class="function">setEdat</span>(<span class="string">0</span>);</span>
+<span class="code-line code-indent-3 code-indent-1"><span class="function">assertEquals</span>(<span class="string">0</span>, persona.<span class="function">getEdat</span>(), <span class="string">"Edat 0 hauria de ser vàlida"</span>);</span>
+<span class="code-line code-indent-3">},</span>
+<span class="code-line code-indent-3">() -> {</span>
+<span class="code-line code-indent-3 code-indent-1">persona.<span class="function">setEdat</span>(<span class="string">150</span>);</span>
+<span class="code-line code-indent-3 code-indent-1"><span class="function">assertEquals</span>(<span class="string">150</span>, persona.<span class="function">getEdat</span>(), <span class="string">"Edat 150 hauria de ser vàlida"</span>);</span>
+<span class="code-line code-indent-3">}</span>
+<span class="code-line code-indent-2">);</span>
+<span class="code-line code-indent-1">}</span>
+<span class="code-line">}</span>
+            </div>
+
+            <div class="concept-box success">
+                <h4>Veus la diferència?</h4>
+                <p><strong>Developer:</strong> "Faig que funcioni i gestioni errors"</p>
+                <p><strong>Tester:</strong> "Verifico que funciona i que gestiona errors"</p>
+                <p><strong>Resultat:</strong> Codi robust i ben testat!</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>4. Assertions Avançades per Testers</h2>
+            
+            <p>Ara que entens el rol de tester, vegem les eines que tens disponibles.</p>
+
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <h4>assertAll()</h4>
+                    <p><strong>Què fa:</strong> Agrupa múltiples verificacions</p>
+                    <p><strong>Per què l'uso:</strong> Vull veure TOTS els errors, no només el primer</p>
+                    <div class="code-block" style="margin-top: 1rem;">
+<span class="code-line"><span class="function">assertAll</span>(</span>
+<span class="code-line code-indent-1">() -> <span class="function">assertEquals</span>(<span class="string">5</span>, suma),</span>
+<span class="code-line code-indent-1">() -> <span class="function">assertTrue</span>(suma > <span class="string">0</span>),</span>
+<span class="code-line code-indent-1">() -> <span class="function">assertFalse</span>(suma < <span class="string">0</span>)</span>
+<span class="code-line">);</span>
+                    </div>
+                </div>
+
+                <div class="comparison-card">
+                    <h4>assertThrows()</h4>
+                    <p><strong>Què fa:</strong> Verifica que es llança una excepció</p>
+                    <p><strong>Per què l'uso:</strong> Vull comprovar gestió d'errors</p>
+                    <div class="code-block" style="margin-top: 1rem;">
+<span class="code-line"><span class="function">assertThrows</span>(</span>
+<span class="code-line code-indent-1">IllegalArgumentException.<span class="keyword">class</span>,</span>
+<span class="code-line code-indent-1">() -> validador.<span class="function">validar</span>(<span class="keyword">null</span>)</span>
+<span class="code-line">);</span>
+                    </div>
+                </div>
+
+                <div class="comparison-card">
+                    <h4>Missatges personalitzats</h4>
+                    <p><strong>Què fa:</strong> Afegeix explicació quan falla</p>
+                    <p><strong>Per què l'uso:</strong> Per entendre ràpidament què ha fallat</p>
+                    <div class="code-block" style="margin-top: 1rem;">
+<span class="code-line"><span class="function">assertEquals</span>(<span class="string">10</span>, total,</span>
+<span class="code-line code-indent-1"><span class="string">"La suma hauria de ser 10"</span></span>
+<span class="code-line">);</span>
+                    </div>
+                </div>
+
+                <div class="comparison-card">
+                    <h4>assertTimeout()</h4>
+                    <p><strong>Què fa:</strong> Verifica temps d'execució</p>
+                    <p><strong>Per què l'uso:</strong> Per tests de rendiment</p>
+                    <div class="code-block" style="margin-top: 1rem;">
+<span class="code-line"><span class="function">assertTimeout</span>(</span>
+<span class="code-line code-indent-1">Duration.<span class="function">ofSeconds</span>(<span class="string">2</span>),</span>
+<span class="code-line code-indent-1">() -> processarDades()</span>
+<span class="code-line">);</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>5. Documentació amb JavaDoc</h2>
+            
+            <p>Tant developers com testers han de documentar el seu codi.</p>
+
+            <h3>Sintaxi de JavaDoc</h3>
+            <div class="code-block">
+<span class="code-line"><span class="javadoc">/**</span></span>
+<span class="code-line"><span class="javadoc"> * Descripció breu del que fa</span></span>
+<span class="code-line"><span class="javadoc"> * </span></span>
+<span class="code-line"><span class="javadoc"> * Pots afegir més detalls aquí</span></span>
+<span class="code-line"><span class="javadoc"> *</span></span>
+<span class="code-line"><span class="javadoc"> * @param nomParametre Descripció del paràmetre</span></span>
+<span class="code-line"><span class="javadoc"> * @return Què retorna</span></span>
+<span class="code-line"><span class="javadoc"> * @throws TipusExcepcio Quan es llança</span></span>
+<span class="code-line"><span class="javadoc"> */</span></span>
+            </div>
+
+            <div class="two-column">
+                <div class="perspective-card developer">
+                    <div class="role-badge developer">Developer</div>
+                    <h4>Documento el codi</h4>
+                    <div class="code-block">
+<span class="code-line"><span class="javadoc">/**</span></span>
+<span class="code-line"><span class="javadoc"> * Valida format d'email</span></span>
+<span class="code-line"><span class="javadoc"> * </span></span>
+<span class="code-line"><span class="javadoc"> * @param email Email a validar</span></span>
+<span class="code-line"><span class="javadoc"> * @return true si vàlid</span></span>
+<span class="code-line"><span class="javadoc"> * @throws IllegalArgumentException</span></span>
+<span class="code-line"><span class="javadoc"> *         si email és null</span></span>
+<span class="code-line"><span class="javadoc"> */</span></span>
+<span class="code-line"><span class="keyword">public boolean</span> <span class="function">validar</span>(String email)</span>
+                    </div>
+                </div>
+
+                <div class="perspective-card tester">
+                    <div class="role-badge tester">Tester</div>
+                    <h4>Documento els tests</h4>
+                    <div class="code-block">
+<span class="code-line"><span class="javadoc">/**</span></span>
+<span class="code-line"><span class="javadoc"> * Verifica que email null</span></span>
+<span class="code-line"><span class="javadoc"> * llança IllegalArgumentException</span></span>
+<span class="code-line"><span class="javadoc"> */</span></span>
+<span class="code-line"><span class="annotation">@Test</span></span>
+<span class="code-line"><span class="keyword">public void</span> <span class="function">testEmailNull</span>()</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>6. Resum: Què has après</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concepte</th>
+                        <th>Developer</th>
+                        <th>Tester</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Excepcions</strong></td>
+                        <td>Llanço amb "throw new"</td>
+                        <td>Verifico amb "assertThrows"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>IllegalArgumentException</strong></td>
+                        <td>Uso quan paràmetre invàlid</td>
+                        <td>Espero quan paràmetre invàlid</td>
+                    </tr>
+                    <tr>
+                        <td><strong>this</strong></td>
+                        <td>Diferencio variable vs paràmetre</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>assertAll</strong></td>
+                        <td>-</td>
+                        <td>Agrupo múltiples verificacions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>JavaDoc</strong></td>
+                        <td>Documento codi i excepcions</td>
+                        <td>Documento què testo</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="concept-box success" style="margin-top: 2rem;">
+                <h4>Proper pas</h4>
+                <p>Ara practica amb els exercicis del document Word! Hauràs de ser TOTS DOS rols:</p>
+                <ol>
+                    <li>Developer: Escriure validadors amb excepcions i JavaDoc</li>
+                    <li>Tester: Escriure tests complets per verificar-los</li>
+                </ol>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p><strong>Sessió 2: Assertions i Gestió d'Excepcions</strong></p>
+        <p style="margin-top: 0.5rem;">RA3 - Disseny i realització de proves - Entorns de Desenvolupament</p>
+        <p style="margin-top: 0.5rem;">La Salle Tarragona</p>
+    </footer>
+</body>
+</html>
