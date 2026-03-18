@@ -1,0 +1,30 @@
+# Dependencias
+node_modules/
+
+# Archivos compilados Java
+*.class
+
+# Guía personal (NO subir)
+GUIA_PERSONAL_DEBUGGING.md
+
+# Soluciones profesor (README de exercicis con respuestas)
+exercicis-classe/*/README.md
+exercicis-classe/README.md
+exercicis-casa/*/README.md
+exercicis-casa/README.md
+guia debugging/GUIA_PROFESSORA_MVC.md
+
+# PDFs y docs pesados
+*.pdf
+*.docx
+*.pptx
+*.png
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
