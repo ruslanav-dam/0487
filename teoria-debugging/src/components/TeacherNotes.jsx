@@ -13,9 +13,8 @@ export default function TeacherNotes({ id, children, visible }) {
         aria-expanded={open}
         aria-controls={id}
       >
-        <span className="teacher-icon">🎓</span>
         <span>Claus per al professor</span>
-        <span className={`arrow ${open ? 'up' : 'down'}`}>▾</span>
+        <span className={`arrow ${open ? 'up' : 'down'}`}>&#9662;</span>
       </button>
       {open && (
         <div id={id} className="teacher-body">
