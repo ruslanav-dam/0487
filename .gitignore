@@ -20,6 +20,15 @@ guia debugging/GUIA_PROFESSORA_MVC.md
 *.pptx
 *.png
 
+# Entregas alumnos y prácticas con datos personales
+Practica1/
+Practica2/
+Practica3/
+
+# HTMLs de prueba que no se usan
+activitats_proves_programari.html
+proves_teoria_interactiva.html
+
 # IDE
 .idea/
 .vscode/
